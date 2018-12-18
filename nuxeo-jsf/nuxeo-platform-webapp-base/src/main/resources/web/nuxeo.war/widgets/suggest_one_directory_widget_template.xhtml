@@ -40,7 +40,7 @@
       cache="true">
       <ui:include src="/incl/select2_js.xhtml" />
 
-      <a4j:region rendered="#{not empty field || widget.mode == 'edit'}">
+      <ui:fragment rendered="#{not empty field || widget.mode == 'edit'}">
         <nxu:valueHolder id="#{widget.id}_select2" value="#{field}"
           required="#{widgetProperty_required}" var="currentValue">
           <nxu:validateDocumentConstraint />
@@ -53,7 +53,7 @@
           <a4j:jsFunction name="#{widget.id}_reRender"
             render="#{widgetProperty_ajaxReRender}" />
         </c:if>
-      </a4j:region>
+      </ui:fragment>
 
       <c:if
         test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
