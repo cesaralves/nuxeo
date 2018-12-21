@@ -49,6 +49,22 @@ public class TokenRequest extends OAuth2Request {
         clientSecret = request.getParameter(CLIENT_SECRET_PARAM);
         refreshToken = request.getParameter(REFRESH_TOKEN_PARAM);
         codeVerifier = request.getParameter(CODE_VERIFIER_PARAM);
+
+        checkAuthorization(request);
+    }
+
+    protected void checkAuthorization(HttpServletRequest request) {
+        final String authorization = request.getHeader("Authorization");
+        if (authorization != null && authorization.toLowerCase().startsWith("basic")) {
+            // Authorization: Basic base64credentials
+            String base64Credentials = authorization.substring("Basic".length()).trim();
+            byte[] credDecoded = java.util.Base64.getDecoder().decode(base64Credentials);
+            String credentials = new String(credDecoded, java.nio.charset.StandardCharsets.UTF_8);
+            // credentials = clientid:secret
+            final String[] values = credentials.split(":", 2);
+            clientId = values[0];
+            clientSecret = values[1];
+        }
     }
 
     public String getGrantType() {
