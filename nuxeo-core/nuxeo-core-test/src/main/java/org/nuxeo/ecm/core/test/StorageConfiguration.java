@@ -65,9 +65,11 @@ public class StorageConfiguration {
 
     public static final String CORE_MONGODB = "mongodb";
 
+    public static final String CORE_PGJSON = "pgjson";
+
     public static final String CORE_MARKLOGIC = "marklogic";
 
-    public static final String DEFAULT_CORE = CORE_VCS;
+    public static final String DEFAULT_CORE = CORE_PGJSON;
 
     private static final String MONGODB_SERVER_PROPERTY = "nuxeo.test.mongodb.server";
 
@@ -76,6 +78,18 @@ public class StorageConfiguration {
     public static final String DEFAULT_MONGODB_SERVER = "localhost:27017";
 
     public static final String DEFAULT_MONGODB_DBNAME = "unittests";
+
+    public static final String PGJSON_URL_PROPERTY = "nuxeo.test.pgjson.url";
+
+    public static final String PGJSON_USER_PROPERTY = "nuxeo.test.pgjson.user";
+
+    public static final String PGJSON_PASSWORD_PROPERTY = "nuxeo.test.pgjson.password";
+
+    public static final String DEFAULT_PGJSON_URL = "jdbc:postgresql://localhost:5432/nuxeojunittests";
+
+    public static final String DEFAULT_PGJSON_USER = "nuxeo";
+
+    public static final String DEFAULT_PGJSON_PASSWORD = "nuxeo";
 
     private static final String CHANGE_TOKEN_ENABLED_PROPERTY = "nuxeo.test.changetoken.enabled";
 
@@ -132,6 +146,10 @@ public class StorageConfiguration {
             isDBS = true;
             initMongoDB();
             break;
+        case CORE_PGJSON:
+            isDBS = true;
+            initPGJSON();
+            break;
         default:
             isDBS = true;
             initExternal();
@@ -163,6 +181,13 @@ public class StorageConfiguration {
             MongoDatabase database = mongoClient.getDatabase(mongoDBDbName);
             database.drop();
         }
+    }
+
+    protected void initPGJSON() {
+        String url = defaultProperty(PGJSON_URL_PROPERTY, DEFAULT_PGJSON_URL);
+        String user = defaultProperty(PGJSON_USER_PROPERTY, DEFAULT_PGJSON_USER);
+        String password = defaultProperty(PGJSON_PASSWORD_PROPERTY, DEFAULT_PGJSON_PASSWORD);
+        // TODO cleanup database
     }
 
     protected void initExternal() {
@@ -218,6 +243,10 @@ public class StorageConfiguration {
 
     public boolean isDBSMongoDB() {
         return isDBS && CORE_MONGODB.equals(coreType);
+    }
+
+    public boolean isDBSPGJSON() {
+        return isDBS && CORE_PGJSON.equals(coreType);
     }
 
     public boolean isDBSExternal() {
@@ -317,6 +346,8 @@ public class StorageConfiguration {
                 contribPath = "OSGI-INF/test-storage-repo-mem-contrib.xml";
             } else if (isDBSMongoDB()) {
                 contribPath = "OSGI-INF/test-storage-repo-mongodb-contrib.xml";
+            } else if (isDBSPGJSON()) {
+                contribPath = "OSGI-INF/test-storage-repo-pgjson-contrib.xml";
             } else if (isDBSExternal()) {
                 bundleName = String.format("org.nuxeo.ecm.core.storage.%s.test", coreType);
                 contribPath = "OSGI-INF/test-storage-repo-contrib.xml";

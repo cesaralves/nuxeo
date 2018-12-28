@@ -856,7 +856,7 @@ public class DBSTransactionState {
             }
         }
         if (!deletes.isEmpty()) {
-            repository.deleteStates(deletes);
+// XXX            repository.deleteStates(deletes);
         }
     }
 
